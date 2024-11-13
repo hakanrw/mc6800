@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
     while (1) {
         if (cpu.PC >= bytes_read && cpu.next_instr) break;
 
-        if (cpu.next_instr) printf("\n********************\n======== %2x ========\n", mem[cpu.PC]);
+        if (cpu.next_instr) printf("\n********************\n======== %02X ========\n", mem[cpu.PC]);
         else printf("\n--------------------\n");
 
         printf("PC: %d\n", cpu.PC);
@@ -49,8 +49,10 @@ int main(int argc, char** argv) {
         printf("RW: %d\n", pins & MC6800_RW ? 1 : 0);
         printf("VMA: %d\n", pins & MC6800_VMA ? 1 : 0);
 
-        printf("A: %x\n", cpu.A);
-        printf("B: %x\n", cpu.B);
+        printf("A: %02X\n", cpu.A);
+        printf("B: %02X\n", cpu.B);
+        printf("IX: %04X\n", cpu.IX);
+        printf("SP: %04X\n", cpu.SP);
         printf("H:%d I:%d N:%d Z:%d V:%d C:%d\n", cpu.P&MC6800_HF?1:0, cpu.P&MC6800_IF?1:0, cpu.P&MC6800_NF?1:0, cpu.P&MC6800_ZF?1:0, cpu.P&MC6800_VF?1:0, cpu.P&MC6800_CF?1:0);
 
         // extract 16-bit address from pin mask
