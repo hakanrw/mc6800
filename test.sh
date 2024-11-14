@@ -16,3 +16,5 @@ done
 
 rm test.log
 mv code.bak code.asm
+rm -r obj
+mkdir obj

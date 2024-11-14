@@ -22,5 +22,5 @@ run: all
 	./68h
 
 .PHONY: test
-test: all
+test: 68h
 	sh ./test.sh
