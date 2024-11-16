@@ -1,8 +1,8 @@
 START:
     LDS #$1FFF       ; Initialize SP to $1FFF
-    JSR SUBROUTINE   ; Branch to SUBROUTINE
+    BSR SUBROUTINE   ; Branch to SUBROUTINE
 
-    LDAA $2000       ; Load the value written by the subroutine into A
+    LDAA $200A       ; Load the value written by the subroutine into A
     STAA $2000       ; Store A into $2000 to verify the value
 
     LDAA $1FFF       ; Load the return address from the stack
@@ -14,7 +14,7 @@ START:
 
 SUBROUTINE:
     LDAA #42         ; Load 42 into A
-    STAA $2000       ; Write 42 to $2000
+    STAA $200A       ; Write 42 to $200A
     LDAA #0
     RTS              ; Return from subroutine
 
