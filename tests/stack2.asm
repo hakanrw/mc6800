@@ -1,4 +1,4 @@
-    LDX #$200A       ; Initialize SP at $1FFF
+    LDX #$1FFF       ; Initialize SP at $1FFF
     TXS              ; Transfer X to SP
 
     LDAA #10         ; Load 10 into A
