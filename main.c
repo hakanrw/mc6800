@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     mc6800_t cpu;
     uint64_t pins = mc6800_init(&cpu);
 
-    pins &= ~MC6800_RESET;
+//    pins &= ~MC6800_RESET;
     printf("VMA: %d\n", pins & MC6800_VMA);
     printf("RESET: %d\n", pins & MC6800_RESET);
     printf("RW: %d\n", pins & MC6800_RW);
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 
         printf("PC: %d\n", cpu.PC);
         pins = mc6800_tick(&cpu, pins);
-        const uint16_t addr = MC6800_GET_ADDR(pins);
+        uint16_t addr = MC6800_GET_ADDR(pins);
         printf("addr: %x\n", MC6800_GET_ADDR(pins));
         printf("data: %x\n", MC6800_GET_DATA(pins));
         printf("RW: %d\n", pins & MC6800_RW ? 1 : 0);
@@ -59,8 +59,16 @@ int main(int argc, char** argv) {
         // perform memory access
         if (pins & MC6800_VMA) {
             if (pins & MC6800_RW) {
+                // memory reads between 0xFFFA - 0xFFFF are special,
+                // redirect them to latest bytes of read ROM
+                // but, 0xFFFE and 0xFFFF will always be 0 for tester (program start is assumed 0)
+                uint8_t data;
+                if (addr >= 0xFFFE) data = 0;
+                else if (addr >= 0xFFFA) data = mem[bytes_read - 6 + (addr - 0xFFFA)];
+                else data = mem[addr];
+                
                 // a memory read
-                MC6800_SET_DATA(pins, mem[addr]);
+                MC6800_SET_DATA(pins, data);
             }
             else {
                 // a memory write

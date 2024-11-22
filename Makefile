@@ -2,7 +2,7 @@
 all: 68h obj/out
 
 68h: main.c chips/chips/mc6800.h
-	cc $< -o $@
+	$(CC) $< -o $@
 
 obj/out: obj/code.p
 	p2bin obj/code.p bin
