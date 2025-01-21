@@ -1,43 +1,35 @@
-    ; Initialize CCR flags with a known state
-    TPA             ; Get default flags
-    STAA  $2000
+START:
+    LDS  #$0FFF
 
-    ; Test SEC (Set Carry) and CLC (Clear Carry)
-    SEC
-    TPA             ; Capture CCR
-    STAA  $2001
-    CLC
-    TPA             ; Capture CCR
-    STAA  $2002
+    LDAA #1
+    STAA $2000
+    WAI
+    STAA $2006
 
-    ; Test SEV (Set Overflow) and CLV (Clear Overflow)
-    SEV
-    TPA             ; Capture CCR
-    STAA  $2003
-    CLV
-    TPA             ; Capture CCR
-    STAA  $2004
+    JMP EOF
 
-    ; Test SEI (Set Interrupt) and CLI (Clear Interrupt)
-    SEI
-    TPA             ; Capture CCR
-    STAA  $2005
-    CLI
-    TPA             ; Capture CCR
-    STAA  $2006
+IRQH:
+    STAA $2001
+    LDAA #3
+    STAA $2003
+    RTI
 
-    SEC
-    SEV
-    SEI
-    TPA
-    STAA  $2009
-    CLC
-    CLV
-    CLI
-    TPA
-    STAA  $200A
+SWIH:
+    STAA $2001
+    LDAA #2
+    STAA $2002
+    RTI
 
-    CLRA
-    TAP             ; Clear all flags except X and Y (default state)
-    TPA
-    STAA  $200B
+NMIH:
+
+; -8 IRQ
+    FDB IRQH
+; -6 SWI
+    FDB SWIH
+; -4 NMI
+    FDB NMIH
+; -2 RESET
+    FDB START
+
+; emulator tester stops execution on file EOF
+EOF:

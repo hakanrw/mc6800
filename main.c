@@ -2,6 +2,7 @@
 
 #define CHIPS_IMPL
 #include "chips/chips/mc6800.h"
+#include "chips/chips/mc6821.h"
 
 int main(int argc, char** argv) {
     // setup 64 kBytes of memory
@@ -9,6 +10,8 @@ int main(int argc, char** argv) {
     // initialize the CPU
     mc6800_t cpu;
     uint64_t pins = mc6800_init(&cpu);
+    mc6821_t pia;
+    mc6821_init(&pia);
 
 //    pins &= ~MC6800_RESET;
     printf("VMA: %d\n", pins & MC6800_VMA);
@@ -41,6 +44,8 @@ int main(int argc, char** argv) {
         if (cpu.next_instr) printf("\n********************\n======== %02X ========\n", mem[cpu.PC]);
         else printf("\n--------------------\n");
 
+        if (cpu.IR >> 4 == 0x3E) { printf("PP\n"); pins |= MC6800_IRQ; } else { pins &= ~MC6800_IRQ; }
+
         printf("PC: %d\n", cpu.PC);
         pins = mc6800_tick(&cpu, pins);
         uint16_t addr = MC6800_GET_ADDR(pins);
@@ -54,6 +59,7 @@ int main(int argc, char** argv) {
         printf("IX: %04X\n", cpu.IX);
         printf("SP: %04X\n", cpu.SP);
         printf("H:%d I:%d N:%d Z:%d V:%d C:%d\n", cpu.P&MC6800_HF?1:0, cpu.P&MC6800_IF?1:0, cpu.P&MC6800_NF?1:0, cpu.P&MC6800_ZF?1:0, cpu.P&MC6800_VF?1:0, cpu.P&MC6800_CF?1:0);
+        printf("IR: %04X\n", cpu.IR);
 
         // extract 16-bit address from pin mask
         // perform memory access
@@ -64,9 +70,8 @@ int main(int argc, char** argv) {
                 // but, 0xFFFE and 0xFFFF will always be 0 for tester (program start is assumed 0)
                 uint8_t data;
                 if (addr >= 0xFFFE) data = 0;
-                else if (addr >= 0xFFFA) data = mem[bytes_read - 6 + (addr - 0xFFFA)];
+                else if (addr >= 0xFFF8) data = mem[bytes_read - 6 + (addr - 0xFFFA)];
                 else data = mem[addr];
-                
                 // a memory read
                 MC6800_SET_DATA(pins, data);
             }
