@@ -61,6 +61,10 @@ int main(int argc, char** argv) {
         printf("H:%d I:%d N:%d Z:%d V:%d C:%d\n", cpu.P&MC6800_HF?1:0, cpu.P&MC6800_IF?1:0, cpu.P&MC6800_NF?1:0, cpu.P&MC6800_ZF?1:0, cpu.P&MC6800_VF?1:0, cpu.P&MC6800_CF?1:0);
         printf("IR: %04X\n", cpu.IR);
 
+        uint64_t pia_pins = pins;
+        if (addr >= 0x4000 && addr <= 0x4004) pia_pins |= MC6821_CS;
+	pia_pins = mc6821_tick(&pia, pia_pins);
+
         // extract 16-bit address from pin mask
         // perform memory access
         if (pins & MC6800_VMA) {
@@ -71,13 +75,19 @@ int main(int argc, char** argv) {
                 uint8_t data;
                 if (addr >= 0xFFFE) data = 0;
                 else if (addr >= 0xFFF8) data = mem[bytes_read - 6 + (addr - 0xFFFA)];
+                else if (addr >= 0x4000 && addr <= 0x4004) data = MC6821_GET_DATA(pia_pins);
                 else data = mem[addr];
                 // a memory read
                 MC6800_SET_DATA(pins, data);
             }
             else {
-                // a memory write
-                mem[addr] = MC6800_GET_DATA(pins);
+                if (addr >= 0x4000 && addr <= 0x4004) {
+                    // skip
+                }
+                else {
+                    // a memory write
+                    mem[addr] = MC6800_GET_DATA(pins);
+                }
             }
         }
 

@@ -11,7 +11,7 @@ IMM_TEST:
 
 V_SET_OK:
 	LDX	#$2001        ; Test 2
-        LDAA    #%10000000   ; Test with value that will set N flag
+        LDAA    #%01000000   ; Test with value that will set N flag
         ASL     A             ; Shift left - should set N flag
         BMI     N_SET_OK      ; Branch if negative flag set
         BRA     TEST_FAIL      
@@ -34,8 +34,8 @@ Z_SET_OK:
 C_SET_OK:
 	LDX	#$2004        ; Test 5
         LDAA    #$55
-        STAA    $30            ; Store test value in direct page
-        ASL     $30            ; Direct addressing mode test
+        STAA    $F0            ; Store test value in direct page
+        ASL     $F0            ; Direct addressing mode test
         BNE     DIR_TEST_OK    ; Ensure result is not zero
         BRA     TEST_FAIL
 
