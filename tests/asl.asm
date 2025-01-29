@@ -42,7 +42,7 @@ C_SET_OK:
 ; Indexed Addressing Mode Test
 DIR_TEST_OK:
 	LDX	#$2005        ; Test 6
-        LDX     #$40           ; Index register points to test location
+        LDX     #$FF           ; Index register points to test location
         LDAA    #%01010101     ; Test value
         STAA    $00,X          ; Store in indexed location
         ASL     $00,X          ; Indexed addressing mode test
